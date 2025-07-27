@@ -42,7 +42,7 @@ if (playerBid === max) { winner = 'player'; player.push(...mus); chooseTrump(); 
 
 function chooseTrump() { const info = document.getElementById('info'); let options = ''; suits.forEach(suit => { options += <button onclick="selectTrump('${suit}')">${suit}</button> ; });
 
-info.innerHTML = Dobierasz mus: ${mus.map(c => c.rank + c.suit).join(', ')}<br> Wybierz kolor atutowy:<br>${options}; }
+info.innerHTML = Dobierasz mus: ${mus.map(c => c.rank + c.suit).join(', ')}<br>Wybierz kolor atutowy:<br>${options}; }
 
 function selectTrump(suit) { atut = suit; showExchange(); }
 
@@ -50,9 +50,9 @@ function showExchange() { const handDiv = document.getElementById('player-hand')
 
 let selected = [];
 
-player.forEach((card, i) => { const btn = document.createElement('button'); btn.className = 'card'; btn.textContent = ${card.rank}${card.suit}; btn.onclick = () => { if (selected.includes(i)) { selected = selected.filter(x => x !== i); btn.style.background = 'white'; } else if (selected.length < 3) { selected.push(i); btn.style.background = '#aaf'; } if (selected.length === 3) { const discard = selected.map(j => player[j]); selected.sort((a, b) => b - a).forEach(j => player.splice(j, 1)); info.innerHTML = Atut to: ${atut}.<br>Rozpoczynasz grę.; startRound(); } }; handDiv.appendChild(btn); }); }
+player.forEach((card, i) => { const btn = document.createElement('button'); btn.className = 'card'; btn.textContent = ${card.rank}${card.suit}; btn.onclick = () => { if (selected.includes(i)) { selected = selected.filter(x => x !== i); btn.style.background = 'white'; } else if (selected.length < 3) { selected.push(i); btn.style.background = '#aaf'; } if (selected.length === 3) { selected.sort((a, b) => b - a).forEach(j => player.splice(j, 1)); info.innerHTML = Atut to: ${atut}.<br>Rozpoczynasz grę.; startRound(); } }; handDiv.appendChild(btn); }); }
 
-function startRound() { meldunki.player = countMeld(player); meldunki.botA = countMeld(bot1); meldunki.botB = countMeld(bot2); document.getElementById('info').innerHTML += \nMeldunki: Ty ${meldunki.player}, ${botA.name} ${meldunki.botA}, ${botB.name} ${meldunki.botB}; // Rozgrywka itd. }
+function startRound() { meldunki.player = countMeld(player); meldunki.botA = countMeld(bot1); meldunki.botB = countMeld(bot2); document.getElementById('info').innerHTML += \nMeldunki: Ty ${meldunki.player}, ${botA.name} ${meldunki.botA}, ${botB.name} ${meldunki.botB}; // Tutaj dodaj dalszą rozgrywkę }
 
 function countMeld(hand) { let meld = 0; suits.forEach(suit => { let k = hand.find(c => c.rank === 'K' && c.suit === suit); let q = hand.find(c => c.rank === 'Q' && c.suit === suit); if (k && q) meld += 20; }); return meld; }
 
