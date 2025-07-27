@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="pl">
+<!DOCTYPE html>
+<html lang="pl">
 <head>
   <meta charset="UTF-8">
   <title>Gra w 1000 - Solo</title>
@@ -98,7 +99,9 @@
 <body>
   <header>
     <h1>Gra w 1000 - Solo</h1>
-  </header><button id="help-btn" onclick="document.getElementById('help-modal').style.display='block'">?</button>
+  </header>
+
+  <button id="help-btn" onclick="document.getElementById('help-modal').style.display='block'">?</button>
 
   <div id="help-modal">
     <h2>Instrukcja</h2>
@@ -111,8 +114,15 @@
       - Wygrywa ten, kto zbierze najwięcej punktów<br>
     </p>
     <button id="close-help" onclick="document.getElementById('help-modal').style.display='none'">Zamknij</button>
-  </div>  <div id="bots-info"></div>
+  </div>
+
+  <div id="bots-info"></div>
   <div id="player-hand"></div>
   <div id="info"></div>
-  <button id="start-btn" onclick="startGame()">Nowa gra</button>  <script src="game.js"></script></body>
+
+  <button id="start-btn" onclick="startGame()">Nowa gra</button>
+
+  <!-- Ważne: dodany `defer` -->
+  <script src="game.js" defer></script>
+</body>
 </html>
