@@ -1,348 +1,118 @@
-<!DOCTYPE html>
-<html lang="pl">
+<!DOCTYPE html><html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <title>Tysiąc Solo z Botami</title>
+  <meta charset="UTF-8">
+  <title>Gra w 1000 - Solo</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f9f9f9;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
       text-align: center;
+    }
+    header {
+      background: #333;
+      color: white;
       padding: 10px;
     }
-    h1 {
-      color: #333;
+    #bots-info {
+      margin: 10px;
+      font-weight: bold;
     }
-    .hand, #bots-info {
-      margin: 10px auto;
-      max-width: 600px;
+    #player-hand {
+      margin-top: 15px;
       display: flex;
-      justify-content: center;
       flex-wrap: wrap;
-      gap: 6px;
+      justify-content: center;
+      gap: 8px;
     }
-    button.card {
-      padding: 8px 14px;
-      font-size: 18px;
-      border-radius: 6px;
-      border: 1px solid #999;
+    .card {
+      padding: 10px 16px;
+      border: 1px solid #888;
+      border-radius: 8px;
       background: white;
       cursor: pointer;
-      user-select: none;
-      transition: background-color 0.3s;
+      transition: background 0.2s;
+      font-size: 18px;
     }
-    button.card:hover {
-      background-color: #d3e3fd;
+    .card:hover {
+      background: #d3e3fd;
     }
     #info {
-      margin: 12px;
-      min-height: 60px;
-      font-size: 16px;
+      margin: 20px;
       white-space: pre-line;
+      font-size: 16px;
     }
     #start-btn {
-      margin-top: 20px;
-      padding: 10px 20px;
+      padding: 12px 24px;
       font-size: 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      background-color: #3478f6;
-      color: white;
       border: none;
-      user-select: none;
-      transition: background-color 0.3s;
+      background: #28a745;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
     }
     #start-btn:hover {
-      background-color: #1a5edb;
+      background: #218838;
+    }
+    #help-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #007bff;
+      color: white;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    #help-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 400px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      z-index: 999;
+    }
+    #help-modal h2 {
+      margin-top: 0;
+    }
+    #close-help {
+      margin-top: 10px;
+      padding: 6px 14px;
+      border: none;
+      background: #dc3545;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>Tysiąc Solo z Botami</h1>
+  <header>
+    <h1>Gra w 1000 - Solo</h1>
+  </header><button id="help-btn" onclick="document.getElementById('help-modal').style.display='block'">?</button>
 
-  <div id="bots-info"></div>
-  <div id="player-hand" class="hand"></div>
+  <div id="help-modal">
+    <h2>Instrukcja</h2>
+    <p>
+      - Gra 1000: 3 gracze (Ty + 2 boty)<br>
+      - Talia: 24 karty (9, 10, J, Q, K, A)<br>
+      - Licytacja: Kto da więcej, dobiera mus i wybiera atut<br>
+      - Można wymienić 3 karty po dobraniu musiku<br>
+      - Meldunki: Dama+Król tego samego koloru = +20 pkt<br>
+      - Wygrywa ten, kto zbierze najwięcej punktów<br>
+    </p>
+    <button id="close-help" onclick="document.getElementById('help-modal').style.display='none'">Zamknij</button>
+  </div>  <div id="bots-info"></div>
+  <div id="player-hand"></div>
   <div id="info"></div>
-  <button id="start-btn">Nowa Gra</button>
-
-  <script>
-    const suits = ['♥️','♦️','♣️','♠️'];
-    const ranks = ['9','10','J','Q','K','A'];
-    const values = { '9': 0, '10': 10, 'J': 2, 'Q': 3, 'K': 4, 'A': 11 };
-
-    function shuffle(array) {
-      return array.sort(() => Math.random() - 0.5);
-    }
-
-    function createDeck() {
-      const deck = [];
-      for (let s of suits) {
-        for (let r of ranks) {
-          deck.push({ suit: s, rank: r, value: values[r] });
-        }
-      }
-      return shuffle(deck);
-    }
-
-    function highestCard(cards) {
-      return cards.reduce((a, b) => a.value > b.value ? a : b);
-    }
-
-    function lowestCard(cards) {
-      return cards.reduce((a, b) => a.value < b.value ? a : b);
-    }
-
-    function removeCard(hand, card) {
-      const idx = hand.indexOf(card);
-      if (idx !== -1) hand.splice(idx, 1);
-      return card;
-    }
-
-    const botList = [
-      {
-        name: "Pan Ryzykant",
-        bid: () => 115 + Math.floor(Math.random() * 20),
-        playCard: (hand, leadSuit) => {
-          let same = hand.filter(c => c.suit === leadSuit);
-          return removeCard(hand, highestCard(same.length ? same : hand));
-        }
-      },
-      {
-        name: "Sierżant Spokój",
-        bid: () => 100 + Math.floor(Math.random() * 10),
-        playCard: (hand, leadSuit) => {
-          let same = hand.filter(c => c.suit === leadSuit);
-          return removeCard(hand, lowestCard(same.length ? same : hand));
-        }
-      },
-      {
-        name: "Meldunkowy Marian",
-        bid: () => 110 + Math.floor(Math.random() * 10),
-        playCard: (hand, leadSuit) => {
-          let nonMeld = hand.filter(c => !(c.rank === 'Q' || c.rank === 'K'));
-          let same = nonMeld.filter(c => c.suit === leadSuit);
-          return removeCard(hand, lowestCard(same.length ? same : nonMeld.length ? nonMeld : hand));
-        }
-      },
-      {
-        name: "Lewiarz Lucjan",
-        bid: function () {
-          const total = this.hand ? this.hand.reduce((sum, c) => sum + c.value, 0) : 0;
-          return total >= 40 ? 120 + Math.floor(Math.random() * 10) : 105;
-        },
-        playCard: function (hand, leadSuit) {
-          const sameSuit = hand.filter(c => c.suit === leadSuit);
-          const cards = sameSuit.length ? sameSuit : hand;
-          return removeCard(hand, highestCard(cards));
-        }
-      }
-    ];
-
-    let deck = [], player = [], bot1 = [], bot2 = [], mus = [];
-    let botA, botB;
-    let atut = null, currentLeader = null, lewy = [];
-    let playerPoints = 0, botAPoints = 0, botBPoints = 0;
-    let meldunki = { player: 0, botA: 0, botB: 0 };
-
-    function startGame() {
-      deck = createDeck();
-      player = deck.splice(0, 7);
-      bot1 = deck.splice(0, 7);
-      bot2 = deck.splice(0, 7);
-      mus = deck.splice(0, 3);
-
-      const shuffledBots = botList.sort(() => Math.random() - 0.5);
-      botA = Object.assign({}, shuffledBots[0]);
-      botB = Object.assign({}, shuffledBots[1]);
-
-      botA.hand = [...bot1];
-      botB.hand = [...bot2];
-
-      document.getElementById('bots-info').innerHTML =
-        `Bot 1: <b>${botA.name}</b> | Bot 2: <b>${botB.name}</b>`;
-
-      licytacja();
-    }
-
-    function licytacja() {
-      const gameDiv = document.getElementById('info');
-      let b1 = botA.bid();
-      let b2 = botB.bid();
-      let highestBotBid = Math.max(b1, b2);
-      let minBid = highestBotBid + 5;
-
-      let html = `Licytacja:<br>${botA.name}: ${b1}<br>${botB.name}: ${b2}<br><br>`;
-      html += `Twoja kolej - wybierz swoją licytację (min. ${minBid}):<br>`;
-      for (let bid = minBid; bid <= 140; bid +=5) {
-        html += `<button onclick="wybierzLicytacje(${bid}, ${b1}, ${b2})">${bid}</button> `;
-      }
-      html += `<br><button onclick="wybierzLicytacje(0, ${b1}, ${b2})">Pas</button>`;
-
-      gameDiv.innerHTML = html;
-    }
-
-    function wybierzLicytacje(playerBid, b1, b2) {
-      const gameDiv = document.getElementById('info');
-      if (playerBid === 0) {
-        gameDiv.innerHTML = `Pasujesz. Boty grają.<br><button onclick="startGame()">Nowa gra</button>`;
-        return;
-      }
-
-      let highest = Math.max(playerBid, b1, b2);
-      let winner = '';
-      if (playerBid === highest) {
-        winner = 'Ty';
-        player.push(...mus);
-      } else if (b1 === highest) {
-        winner = botA.name;
-        bot1.push(...mus);
-      } else {
-        winner = botB.name;
-        bot2.push(...mus);
-      }
-
-      gameDiv.innerHTML = `Licytację wygrał: <b>${winner}</b> za ${highest} punktów.<br><br>`;
-      startRound();
-    }
-
-    function ustalAtut() {
-      const atutyKarty = mus.find(c => c.rank === 'A') || mus[0];
-      atut = atutyKarty.suit;
-      document.getElementById('info').innerHTML += `\nAtut to: ${atut}`;
-    }
-
-    function sprawdzMeldunki(hand) {
-      let meld = 0;
-      suits.forEach(suit => {
-        let k = hand.find(c => c.rank === 'K' && c.suit === suit);
-        let q = hand.find(c => c.rank === 'Q' && c.suit === suit);
-        if (k && q) meld += 20;
-      });
-      return meld;
-    }
-
-    function startRound() {
-      ustalAtut();
-      currentLeader = "Ty";
-      lewy = [];
-      playerPoints = 0; botAPoints = 0; botBPoints = 0;
-      meldunki.player = sprawdzMeldunki(player);
-      meldunki.botA = sprawdzMeldunki(bot1);
-      meldunki.botB = sprawdzMeldunki(bot2);
-
-      const infoDiv = document.getElementById('info');
-      infoDiv.innerHTML += `\nMeldunki:\nTy: ${meldunki.player}\n${botA.name}: ${meldunki.botA}\n${botB.name}: ${meldunki.botB}\n\nZacznij od zagrania karty!`;
-
-      pokazReke();
-    }
-
-    function pokazReke() {
-      const handDiv = document.getElementById('player-hand');
-      const infoDiv = document.getElementById('info');
-      handDiv.innerHTML = '';
-      infoDiv.innerHTML += `\nWybierz kartę do zagrania:`;
-
-      player.forEach((card, i) => {
-        const btn = document.createElement('button');
-        btn.className = 'card';
-        btn.textContent = `${card.rank}${card.suit}`;
-        btn.onclick = () => zagrajKarte(i);
-        handDiv.appendChild(btn);
-      });
-    }
-
-    function zagrajKarte(index) {
-      const card = player.splice(index, 1)[0];
-      document.getElementById('info').innerText = `Ty zagrałeś ${card.rank}${card.suit}`;
-      lewy.push({ name: "Ty", card });
-
-      if (lewy.length === 3) {
-        kontynuujRunde(lewy);
-        lewy = [];
-      } else {
-        ruchBota(botA.name);
-      }
-
-      pokazReke();
-    }
-
-    function ruchBota(botName) {
-      const infoDiv = document.getElementById('info');
-      let hand, botObj;
-      if (botName === botA.name) {
-        hand = bot1; botObj = botA;
-      } else {
-        hand = bot2; botObj = botB;
-      }
-
-      let leadSuit = lewy.length > 0 ? lewy[0].card.suit : null;
-      const card = botObj.playCard(hand, leadSuit);
-      lewy.push({ name: botName, card });
-      infoDiv.innerHTML += `\n${botName} zagrał ${card.rank}${card.suit}`;
-
-      if (lewy.length === 3) {
-        kontynuujRunde(lewy);
-        lewy = [];
-      } else {
-        if (botName === botA.name) ruchBota(botB.name);
-        else ruchBota("Ty");
-      }
-    }
-
-    function kontynuujRunde(karty) {
-      const winner = ktoWygralLewę(karty);
-      const pkt = policzLewę(karty);
-
-      if (winner === "Ty") playerPoints += pkt;
-      else if (winner === botA.name) botAPoints += pkt;
-      else botBPoints += pkt;
-
-      document.getElementById('info').innerHTML += `\n${winner} wygrał lewę i zdobywa ${pkt} punktów.`;
-
-      currentLeader = winner;
-
-      if (player.length === 0) zakonczRunde();
-      else {
-        document.getElementById('info').innerHTML += `\nTeraz ruch: ${currentLeader}`;
-        if (currentLeader === "Ty") pokazReke();
-        else ruchBota(currentLeader);
-      }
-    }
-
-    function ktoWygralLewę(karty) {
-      const leadSuit = karty[0].card.suit;
-      const atuty = karty.filter(k => k.card.suit === atut);
-      if (atuty.length > 0) {
-        return atuty.reduce((max, cur) => cur.card.value > max.card.value ? cur : max).name;
-      } else {
-        const leadCards = karty.filter(k => k.card.suit === leadSuit);
-        return leadCards.reduce((max, cur) => cur.card.value > max.card.value ? cur : max).name;
-      }
-    }
-
-    function policzLewę(karty) {
-      return karty.reduce((sum, k) => sum + k.card.value, 0);
-    }
-
-    function zakonczRunde() {
-      playerPoints += meldunki.player;
-      botAPoints += meldunki.botA;
-      botBPoints += meldunki.botB;
-
-      const wynik = `Koniec rundy!\n\nPunkty:\nTy: ${playerPoints}\n${botA.name}: ${botAPoints}\n${botB.name}: ${botBPoints}`;
-      document.getElementById('info').innerText = wynik;
-
-      document.getElementById('player-hand').innerHTML = '';
-      document.getElementById('bots-info').innerHTML = '';
-
-      const btn = document.createElement('button');
-      btn.textContent = 'Zagraj ponownie';
-      btn.onclick = () => startGame();
-      document.getElementById('player-hand').appendChild(btn);
-    }
-
-    // uruchomienie
-    document.getElementById('start-btn').addEventListener('click', startGame);
-  </script>
-</body>
+  <button id="start-btn" onclick="startGame()">Nowa gra</button>  <script src="game.js"></script></body>
 </html>
