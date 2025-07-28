@@ -1,128 +1,21 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <title>Gra w 1000 - Solo</title>
+  <meta charset="UTF-8" />
+  <title>Gra w 1000</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-    header {
-      background: #333;
-      color: white;
-      padding: 10px;
-    }
-    #bots-info {
-      margin: 10px;
-      font-weight: bold;
-    }
-    #player-hand {
-      margin-top: 15px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px;
-    }
-    .card {
-      padding: 10px 16px;
-      border: 1px solid #888;
-      border-radius: 8px;
-      background: white;
-      cursor: pointer;
-      transition: background 0.2s;
-      font-size: 18px;
-    }
-    .card:hover {
-      background: #d3e3fd;
-    }
-    #info {
-      margin: 20px;
-      white-space: pre-line;
-      font-size: 16px;
-    }
-    #start-btn {
-      padding: 12px 24px;
-      font-size: 18px;
-      border: none;
-      background: #28a745;
-      color: white;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    #start-btn:hover {
-      background: #218838;
-    }
-    #help-btn {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: #007bff;
-      color: white;
-      border: none;
-      font-size: 20px;
-      cursor: pointer;
-    }
-    #help-modal {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      max-width: 400px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      z-index: 999;
-    }
-    #help-modal h2 {
-      margin-top: 0;
-    }
-    #close-help {
-      margin-top: 10px;
-      padding: 6px 14px;
-      border: none;
-      background: #dc3545;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+    .card { margin: 4px; padding: 8px; border: 1px solid #000; cursor: pointer; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Gra w 1000 - Solo</h1>
-  </header>
 
-  <button id="help-btn" onclick="document.getElementById('help-modal').style.display='block'">?</button>
-
-  <div id="help-modal">
-    <h2>Instrukcja</h2>
-    <p>
-      - Gra 1000: 3 gracze (Ty + 2 boty)<br>
-      - Talia: 24 karty (9, 10, J, Q, K, A)<br>
-      - Licytacja: Kto da więcej, dobiera mus i wybiera atut<br>
-      - Można wymienić 3 karty po dobraniu musiku<br>
-      - Meldunki: Dama+Król tego samego koloru = +20 pkt<br>
-      - Wygrywa ten, kto zbierze najwięcej punktów<br>
-    </p>
-    <button id="close-help" onclick="document.getElementById('help-modal').style.display='none'">Zamknij</button>
-  </div>
+  <h1>Gra w 1000 - Solo</h1>
+  <button onclick="startGame()">Nowa gra</button>
 
   <div id="bots-info"></div>
-  <div id="player-hand"></div>
   <div id="info"></div>
+  <div id="player-hand"></div>
 
-  <button id="start-btn" onclick="startGame()">Nowa gra</button>
-
-  <!-- Ważne: dodany `defer` -->
   <script src="game.js" defer></script>
 </body>
 </html>
